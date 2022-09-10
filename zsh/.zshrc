@@ -20,6 +20,18 @@ source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # Load aliases
 source ~/.config/alias
 
+# Override default alias with fuzzy finder
+alias() {
+	selected=$( builtin alias | sed 's/=.*//' | fzf )
+	cmd="$( builtin alias $selected | sed -e "s/^[^=]*=//g" -e "s/\'//g" )"
+	echo $cmd | grep -q "cd" && dir=$( echo $cmd | sed 's/[^ ]* //g' )
+	if [[ -n $dir ]]; then
+		eval cd $dir
+	else
+		eval $cmd
+	fi
+}
+
 # Go
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOPATH/bin
