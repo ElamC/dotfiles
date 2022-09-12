@@ -32,6 +32,21 @@ alias() {
 	fi
 }
 
+# Git branch select 
+gits() {
+	git branch | fzf | sed 's/\* //g' | xargs -I '{}' git checkout {}
+}
+
+# Create .gitignore
+giti() {
+	list=$( find ~/desktop/templates -type f -name '*.gitignore' | cut -d\. -f1 )
+	echo $list | fzf --multi --delimiter / --with-nth -1 | awk '{print $1 ".gitignore"}' |
+	while read -r line; do 
+		printf "#--$( echo $line | xargs basename -s .gitignore )--#\n";
+		cat $line; printf "\n";
+	done > test.gitignore
+}
+
 # Go
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOPATH/bin
