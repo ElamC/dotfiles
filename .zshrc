@@ -10,7 +10,7 @@ function parse_branch() {
 	local indicator
 	git_status=$(git status --porcelain=v1 2> /dev/null | wc -l)
 	[[ ! $git_status -eq "0" ]] && indicator=*
-	git branch 2> /dev/null | sed -n -e "s/^\* \(.*\)/git:\1$indicator /p"
+	git branch 2> /dev/null | sed -n -e "s/^\* \(.*\)/\1$indicator /p"
 }
 setopt PROMPT_SUBST
 export PROMPT='%{%F{normal}%}%n %{%F{39}%}@%{%F{normal}%} %~ %{%F{245}%}$(parse_branch)%{%F{normal}%}$ %{%f%}'
@@ -18,7 +18,7 @@ export PROMPT='%{%F{normal}%}%n %{%F{39}%}@%{%F{normal}%} %~ %{%F{245}%}$(parse_
 # zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 # aliases
-source ~/.config/alias
+source ~/.config/.alias.zsh
 
 # fzf alias
 alias() {
@@ -50,7 +50,7 @@ gitr() {
 }
 
 tunnel() {
-	eval 'ngrok http https://localhost:${1-8080}'
+	ngrok http https://localhost:${1-8080}
 }
 
 function _cdp () {
