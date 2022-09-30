@@ -1,11 +1,11 @@
-# Tab autocomplete/select
+# tab autocomplete/select
 autoload -U compinit
 zstyle ':completion:*' menu select
 zmodload zsh/complist 
 compinit
 _comp_options+=(globdots)		# Include hidden files.
 
-# Display working branch in prompt
+# working branch in prompt
 function parse_branch() {
 	local indicator
 	git_status=$(git status --porcelain=v1 2> /dev/null | wc -l)
@@ -15,12 +15,12 @@ function parse_branch() {
 setopt PROMPT_SUBST
 export PROMPT='%{%F{normal}%}%n %{%F{39}%}@%{%F{normal}%} %~ %{%F{245}%}$(parse_branch)%{%F{normal}%}$ %{%f%}'
 
-# Load zsh-autosuggestions
+# zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# Load aliases
+# aliases
 source ~/.config/alias
 
-# Override default alias with fuzzy finder
+# fzf alias
 alias() {
 	selected=$( builtin alias | sed 's/=.*//' | fzf )
 	cmd="$( builtin alias $selected | sed -e "s/^[^=]*=//g" -e "s/\'//g" )"
@@ -32,11 +32,6 @@ alias() {
 	fi
 }
 
-# Git branch select 
-gits() {
-	git branch | fzf | sed 's/\* //g' | xargs -I '{}' git checkout {}
-}
-
 # Create .gitignore
 giti() {
 	list=$( find ~/.config/templates -type f -name '*.gitignore' | rev | cut -d\. -f2- | rev )
@@ -46,6 +41,26 @@ giti() {
 		cat $line; printf "\n";
 	done > $PWD/.gitignore
 }
+
+# cd to repo root
+gitr() {
+	if $( git rev-parse --is-inside-work-tree &> /dev/null ); then
+		eval cd $(git rev-parse --show-toplevel)
+	fi
+}
+
+tunnel() {
+	eval 'ngrok http https://localhost:${1-8080}'
+}
+
+function _cdp () {
+	((CURRENT == 2)) &&
+  	_files -/ -W ~/work
+}
+work() {
+  eval cd "~/work/$1"
+}
+compdef _cdp work
 
 # Go
 export PATH=$PATH:/usr/local/go/bin
