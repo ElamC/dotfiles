@@ -1,0 +1,26 @@
+[alias]
+	amend = commit -a --amend
+	default = !git branch -rl '*/HEAD' | awk -F/ '{print $NF}'
+	bswitch = !git branch | fzf | sed 's/\\* //g' | xargs -I '{}' git checkout {}
+	bclean = !git branch --merged ${1-$(git default)} | grep -v " ${1-$(git default)}$" | xargs git branch -d
+	stat = !git status -s
+	alias = !git config --global --list | grep alias | awk -F '[\\.=]' '{print $2}'
+	cp = "!f() { git commit -m \"$1\" && git push origin; }; f"
+
+[push]
+	default = current
+
+[pull]
+	rebase = true
+
+[fetch]
+	prune = true
+
+[init]
+	defaultBranch = main
+
+[include]
+	path = ~/.gitconfig.local
+
+[core]
+	editor = code --wait
