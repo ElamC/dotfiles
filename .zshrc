@@ -13,12 +13,14 @@ function parse_branch() {
 	git branch 2> /dev/null | sed -n -e "s/^\* \(.*\)/\1$indicator /p"
 }
 setopt PROMPT_SUBST
-export PROMPT='%{%F{normal}%}%n %{%F{39}%}@%{%F{normal}%} %~ %{%F{245}%}$(parse_branch)%{%F{normal}%}$ %{%f%}'
+export PROMPT='%~ %{%F{245}%}$(parse_branch)%{%F{normal}%}$ %{%f%}'
 
 # zsh-autosuggestions
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# copydir
+source ~/.zsh/copydir/copydir.plugin.zsh
 # aliases
-source ~/.config/.alias.zsh
+source ~/.zsh/.alias.zsh
 
 # fzf alias
 alias() {
@@ -34,9 +36,9 @@ alias() {
 
 # Create .gitignore
 giti() {
-	list=$( find ~/.config/templates -type f -name '*.gitignore' | rev | cut -d\. -f2- | rev )
+	list=$( find ~/templates -type f -name '*.gitignore' | rev | cut -d\. -f2- | rev )
 	echo $list | fzf --multi --delimiter / --with-nth -1 | awk '{print $1 ".gitignore"}' |
-	while read -r line; do 
+	while read -r line; do
 		printf "#--$( echo $line | xargs basename -s .gitignore )--#\n";
 		cat $line; printf "\n";
 	done > $PWD/.gitignore
@@ -49,19 +51,35 @@ gitr() {
 	fi
 }
 
+copydir {
+  pwd | tr -d "\r\n" | pbcopy
+}
+
+gitp() {
+  # pull all remote branches
+  for remote in `git branch -r`; do git branch --track ${remote#origin/} $remote; done
+  git fetch --all
+  git pull --all
+}
+
 tunnel() {
-	ngrok http https://localhost:${1-8080}
+	ngrok http http://localhost:${1-8080}
+}
+
+# https://stackoverflow.com/questions/45141402/build-and-run-dockerfile-with-one-command/59220656#59220656
+dbr() {
+  docker build --no-cache . | tee /dev/tty | tail -n1 | cut -d' ' -f3 | xargs -I{} docker run --rm -i {}
 }
 
 function _cdp () {
 	((CURRENT == 2)) &&
-  	_files -/ -W ~/work
+  	_files -/ -W ~/${words}
 }
-work() {
-  eval cd "~/work/$1"
-}
-compdef _cdp work
+compdef _cdp work personal
 
 # Go
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$GOPATH/bin
+
+#defaults write -g InitialKeyRepeat -int 10
+#defaults write -g KeyRepeat -int 8
