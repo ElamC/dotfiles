@@ -4,6 +4,7 @@
 	b = !git branch | fzf | sed 's/\\* //g' | xargs -I '{}' git checkout {}
 	bc = !git branch --merged ${1-$(git default)} | grep -v " ${1-$(git default)}$" | xargs git branch -d
 	stat = !git status -s
+	ruf = !git ls-files --other --exclude-standard | xargs rm -rf
 	cp = "!f() { \
 		if [[ $(echo "$1" | commitlint; echo $?) == 0 ]]; \
 		then git commit -m \"$1\" && git push origin; \
@@ -23,3 +24,5 @@
 	editor = code --wait
 [http]
 	postBuffer = 524288000
+[remote]
+  pushDefault = origin
