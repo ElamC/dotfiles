@@ -30,6 +30,12 @@ call plug#end()
 
 au TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=200}
 
+" yank whole file
+nmap <leader>yf ggyG
+
+" tabout
+inoremap <expr> <Tab> search('\%#[)\]}''"]', 'n') ? '<Right>' : '<Tab>'
+
 " inner entire buffer
 onoremap ib :exec "normal! ggVG"<cr>
 vmap <leader>s <plug>(SubversiveSubstituteRange)
