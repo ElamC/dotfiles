@@ -15,12 +15,17 @@ function parse_branch() {
 setopt PROMPT_SUBST
 export PROMPT='%~ %{%F{245}%}$(parse_branch)%{%F{normal}%}$ %{%f%}'
 
-# zsh-autosuggestions
+# plugins
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# copydir
 source ~/.zsh/copydir/copydir.plugin.zsh
-# aliases
-source ~/.zsh/.alias.zsh
+
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+
+alias python="/usr/local/bin/python3"
+alias personal="cd ~/personal"
+alias cdh="cd ~"
+alias dls="docker ps -a"
 
 # fzf alias
 alias() {
@@ -36,7 +41,7 @@ alias() {
 
 # Create .gitignore
 giti() {
-	list=$( find ~/templates -type f -name '*.gitignore' | rev | cut -d\. -f2- | rev )
+	list=$( find ~/bin/templates -type f -name '*.gitignore' | rev | cut -d\. -f2- | rev )
 	echo $list | fzf --multi --delimiter / --with-nth -1 | awk '{print $1 ".gitignore"}' |
 	while read -r line; do
 		printf "#--$( echo $line | xargs basename -s .gitignore )--#\n";
@@ -69,6 +74,10 @@ tunnel() {
 # https://stackoverflow.com/questions/45141402/build-and-run-dockerfile-with-one-command/59220656#59220656
 dbr() {
   docker build --no-cache . | tee /dev/tty | tail -n1 | cut -d' ' -f3 | xargs -I{} docker run --rm -i {}
+}
+
+work () {
+	cd ~/work/$1
 }
 
 function _cdp () {
