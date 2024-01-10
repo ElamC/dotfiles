@@ -1,28 +1,29 @@
 [alias]
-	amend = commit -a --amend
-	default = !git branch -rl '*/HEAD' | awk -F/ '{print $NF}'
-	b = !git branch | fzf | sed 's/\\* //g' | xargs -I '{}' git checkout {}
-	bc = !git branch --merged ${1-$(git default)} | grep -v " ${1-$(git default)}$" | xargs git branch -d
-	stat = !git status -s
-	ruf = !git ls-files --other --exclude-standard | xargs rm -rf
-	cp = "!f() { \
-		if [[ $(echo "$1" | commitlint; echo $?) == 0 ]]; \
-		then git commit -m \"$1\" && git push origin; \
-		else echo "$1" | commitlint; fi \
-		}; f"
+    amend = commit -a --amend
+    go = !git branch | fzf | sed 's/\\* //g' | xargs -I '{}' git checkout {}
+    bc = ! "git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
+    s = !git status -s
+    r =  !git status -s | awk '{print $2}' | fzf -m | xargs git restore
+    sync = "!f() { git fetch --all && for b in `git branch -r | grep -v -- '->'`; do git branch --track ${b##origin/} $b; done && git pull --all; }; f"
+    ruf = !git ls-files --other --exclude-standard | xargs rm -rf
+    lg = log --all --graph --format=oneline
 [push]
-	default = current
+    default = current
 [pull]
-	rebase = true
+    rebase = true
+[rebase]
+    autoStash = true
 [fetch]
-	prune = true
+    prune = true
 [init]
-	defaultBranch = main
+    defaultBranch = main
 [include]
-	path = ~/.gitconfig.local
+    path = ~/.gitconfig.local
 [core]
-	editor = code --wait
+    editor = nvim
 [http]
-	postBuffer = 524288000
-[remote]
-  pushDefault = origin
+    postBuffer = 524288000
+[merge]
+    tool = nvim -d
+[protocol "file"]
+    allow = always
