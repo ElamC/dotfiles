@@ -24,7 +24,25 @@ alias dls="docker ps -a"
 alias ls="ls -a -G"
 alias ze='nvim ~/.zshrc'
 alias zs='source ~/.zshrc'
-alias rr='cd "$(git rev-parse --show-toplevel)"'   # to repo root
+
+# git 
+alias grr='cd "$(git rev-parse --show-toplevel)"'   # to repo root
+alias gca='git commit -a --amend'
+alias gc='git checkout $(git branch | fzf | sed "s/^[ *]*//g")'
+alias gs='git status -s'
+alias gr='git status -s | awk "{print \$2}" | fzf -m | xargs git restore'
+alias gl='git log --all --graph --format=oneline'
+alias gcm="git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '\$2 == \"[gone]\" {print \$1}' | xargs -r git branch -D"
+# [u]pdate [l]ocal
+gul() {
+    for b in `git branch -r | grep -v -- '->'`; do 
+        git branch --track ${b##origin/} $b; 
+    done && git pull --all
+}
+# [p]ull request check[o]ut
+gpo() {
+  gh pr list --author "@me" | fzf --header 'checkout PR' | awk '{print $(NF-5)}' | xargs git checkout
+}
 
 alias tma='tmux attach -t'
 alias tmn='tmux new -s'
